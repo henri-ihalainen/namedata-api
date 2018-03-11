@@ -1,22 +1,51 @@
 package fi.namedata
 
-import fi.namedata.model.Name
-import fi.namedata.model.NameType
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import fi.namedata.model.FirstName
 import fi.namedata.repository.NameRepository
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
-import javax.transaction.Transactional
 
 @Component
-class DBInit(val nameRepository: NameRepository) {
+class DBInit(val nameRepository: NameRepository, val objectMapper: ObjectMapper) {
 
     @PostConstruct
-    @Transactional
     fun init() {
-        val testName = Name(name ="Pertti", count = 123, type = NameType.MEN_FIRST)
-        nameRepository.save(testName)
-        nameRepository.save(testName)
-        nameRepository.save(testName)
-        println(nameRepository.findAll())
+        val map = HashMap<String, FirstName>()
+
+        addResource("data/male-first.json", map) { dto, count -> dto.maleFirstCount = count }
+        addResource("data/male-others.json", map) { dto, count -> dto.maleOtherCount = count }
+        addResource("data/male-all.json", map) { dto, count -> dto.maleAllCount = count }
+        addResource("data/female-first.json", map) { dto, count -> dto.femaleFirstCount = count }
+        addResource("data/female-others.json", map) { dto, count -> dto.femaleOtherCount = count }
+        addResource("data/female-all.json", map) { dto, count -> dto.femaleAllCount = count }
+
+        nameRepository.saveAll(map.values).subscribe()
     }
+
+    private fun addResource(resource: String, map: HashMap<String, FirstName>, setName: (FirstName, Int) -> Unit) {
+        val namesResource = ClassPathResource(resource)
+        val nameDtos = objectMapper.readValue<List<NameResourceDto>>(namesResource.inputStream)
+        mapResources(map, nameDtos, setName)
+    }
+
+    private fun mapResources(map: MutableMap<String, FirstName>,
+                             resourceDtos: List<NameResourceDto>,
+                             setCount: (FirstName, Int) -> Unit) {
+        resourceDtos.forEach({
+            var dto = map[it.name]
+            if (dto != null) {
+                setCount(dto, it.count)
+            } else {
+                dto = FirstName(name = it.name)
+                setCount(dto, it.count)
+                map[it.name] = dto
+            }
+        })
+    }
+
+    private data class NameResourceDto(val name: String, val count: Int)
 }
+
