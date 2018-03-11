@@ -25,10 +25,12 @@ class DBInit(val nameRepository: NameRepository, val objectMapper: ObjectMapper)
         nameRepository.saveAll(map.values).subscribe()
     }
 
-    private fun addResource(resource: String, map: HashMap<String, FirstName>, setName: (FirstName, Int) -> Unit) {
+    private fun addResource(resource: String,
+                            map: HashMap<String, FirstName>,
+                            setCount: (FirstName, Int) -> Unit) {
         val namesResource = ClassPathResource(resource)
         val nameDtos = objectMapper.readValue<List<NameResourceDto>>(namesResource.inputStream)
-        mapResources(map, nameDtos, setName)
+        mapResources(map, nameDtos, setCount)
     }
 
     private fun mapResources(map: MutableMap<String, FirstName>,
