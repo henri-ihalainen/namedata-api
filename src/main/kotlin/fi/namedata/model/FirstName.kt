@@ -15,4 +15,13 @@ data class FirstName(
         var femaleFirstCount: Int = 0,
         var femaleOtherCount: Int = 0,
         var femaleAllCount: Int = 0
-)
+) {
+    fun getTotalCount(): Int =
+            maleFirstCount
+                    .plus(maleOtherCount)
+                    .plus(maleAllCount)
+                    .plus(femaleFirstCount)
+                    .plus(femaleOtherCount)
+                    .plus(femaleAllCount)
+
+}

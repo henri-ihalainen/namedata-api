@@ -8,11 +8,11 @@ import reactor.core.publisher.Flux
 @Component
 class NameService(val repository: NameRepository) {
     fun getFirstNames(sortBy: String = ""): Flux<FirstNameDto> = repository.findAll()
-            .map { toFirstNameDto(it) }
             .sort { o1, o2 -> sortBy(sortBy, o1, o2) }
+            .map { toFirstNameDto(it) }
 }
 
-fun sortBy(sortBy: String, o1: FirstNameDto, o2: FirstNameDto): Int =
+fun sortBy(sortBy: String, o1: FirstName, o2: FirstName): Int =
         when (sortBy) {
             "maleAllCount" -> o2.maleAllCount.minus(o1.maleAllCount)
             "maleFirstCount" -> o2.maleFirstCount.minus(o1.maleFirstCount)
@@ -20,6 +20,7 @@ fun sortBy(sortBy: String, o1: FirstNameDto, o2: FirstNameDto): Int =
             "femaleAllCount" -> o2.femaleAllCount.minus(o1.femaleAllCount)
             "femaleFirstCount" -> o2.femaleFirstCount.minus(o1.femaleFirstCount)
             "femaleOtherCount" -> o2.femaleOtherCount.minus(o1.femaleOtherCount)
+            "totalCount" -> o2.getTotalCount().compareTo(o1.getTotalCount())
             else -> {
                 o1.name.compareTo(o2.name)
             }
