@@ -7,8 +7,23 @@ import reactor.core.publisher.Flux
 
 @Component
 class NameService(val repository: NameRepository) {
-    fun getFirstNames(): Flux<FirstNameDto> = repository.findAll().map { toFirstNameDto(it)}
+    fun getFirstNames(sortBy: String = ""): Flux<FirstNameDto> = repository.findAll()
+            .map { toFirstNameDto(it) }
+            .sort { o1, o2 -> sortBy(sortBy, o1, o2) }
 }
+
+fun sortBy(sortBy: String, o1: FirstNameDto, o2: FirstNameDto): Int =
+        when (sortBy) {
+            "maleAllCount" -> o2.maleAllCount.minus(o1.maleAllCount)
+            "maleFirstCount" -> o2.maleFirstCount.minus(o1.maleFirstCount)
+            "maleOtherCount" -> o2.maleOtherCount.minus(o1.maleOtherCount)
+            "femaleAllCount" -> o2.femaleAllCount.minus(o1.femaleAllCount)
+            "femaleFirstCount" -> o2.femaleFirstCount.minus(o1.femaleFirstCount)
+            "femaleOtherCount" -> o2.femaleOtherCount.minus(o1.femaleOtherCount)
+            else -> {
+                o1.name.compareTo(o2.name)
+            }
+        }
 
 private fun toFirstNameDto(n: FirstName): FirstNameDto = FirstNameDto(
         n.name,
@@ -22,11 +37,10 @@ private fun toFirstNameDto(n: FirstName): FirstNameDto = FirstNameDto(
 
 data class FirstNameDto(
         val name: String,
-        val maleFirstCount: Int? = 0,
-        val maleOtherCount: Int? = 0,
-        val maleAllCount: Int? = 0,
-        val femaleFirstCount: Int? = 0,
-        val femaleOtherCount: Int? = 0,
-        val femaleAllCount: Int? = 0
-
+        val maleFirstCount: Int = 0,
+        val maleOtherCount: Int = 0,
+        val maleAllCount: Int = 0,
+        val femaleFirstCount: Int = 0,
+        val femaleOtherCount: Int = 0,
+        val femaleAllCount: Int = 0
 )

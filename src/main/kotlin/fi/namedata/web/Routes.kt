@@ -10,7 +10,7 @@ class Routes(val handlers: Handlers) {
     @Bean
     fun router() = router {
         accept(MediaType.APPLICATION_JSON).nest {
-            GET("/first-names", {handlers.getFirstNames()})
+            GET("/first-names", handlers::getFirstNames)
         }
     }
 }

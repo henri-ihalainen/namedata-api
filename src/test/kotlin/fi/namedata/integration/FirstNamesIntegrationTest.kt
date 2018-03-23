@@ -17,7 +17,7 @@ class FirstNamesIntegrationTest {
     @Autowired
     lateinit var context: ApplicationContext
 
-    var client: WebTestClient? = null
+    lateinit var client: WebTestClient
 
     @Before
     fun setup() {
@@ -29,8 +29,15 @@ class FirstNamesIntegrationTest {
     }
 
     @Test
-    fun `status is ok`() {
-        client!!.get().uri("/first-names").exchange()
+    fun `empty query works`() {
+        client.get().uri("/first-names").exchange()
                 .expectStatus().isOk
+    }
+
+    @Test
+    fun `sortBy works`() {
+        client.get().uri("/first-names?sortBy=femaleAllCount").exchange()
+                .expectStatus().isOk
+                .expectBody().jsonPath("$[0].name").isEqualTo("Maria")
     }
 }
