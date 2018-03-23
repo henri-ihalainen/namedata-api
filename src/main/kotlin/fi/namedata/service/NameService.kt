@@ -3,16 +3,18 @@ package fi.namedata.service
 import fi.namedata.model.FirstName
 import fi.namedata.repository.NameRepository
 import org.springframework.stereotype.Component
+import org.springframework.util.MultiValueMap
 import reactor.core.publisher.Flux
 
 @Component
 class NameService(val repository: NameRepository) {
-    fun getFirstNames(sortBy: String = ""): Flux<FirstNameDto> = repository.findAll()
-            .sort { o1, o2 -> sortBy(sortBy, o1, o2) }
+    fun getFirstNames(queryParams: MultiValueMap<String, String>): Flux<FirstNameDto> = repository.findAll()
+            .sort { o1, o2 -> sortBy(queryParams["sortBy"]?.get(0), o1, o2) }
+            .filter {o -> true  }
             .map { toFirstNameDto(it) }
 }
 
-fun sortBy(sortBy: String, o1: FirstName, o2: FirstName): Int =
+fun sortBy(sortBy: String?, o1: FirstName, o2: FirstName): Int =
         when (sortBy) {
             "maleAllCount" -> o2.maleAllCount.minus(o1.maleAllCount)
             "maleFirstCount" -> o2.maleFirstCount.minus(o1.maleFirstCount)
