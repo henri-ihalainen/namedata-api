@@ -21,4 +21,11 @@ class NameRepositoryIntegrationTest {
                 .expectNext(119)
                 .verifyComplete()
     }
+
+    @Test
+    fun `find names where all count is greater than 0`() {
+        StepVerifier.create(repository.findNamesWithAllCountGreaterThanZero().count())
+                .expectNext(11847)
+                .verifyComplete()
+    }
 }
