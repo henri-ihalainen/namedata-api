@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.namedata.model.FirstName
 import fi.namedata.repository.NameRepository
+import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
+@Profile("default")
 @Component
 class DBInit(val nameRepository: NameRepository, val objectMapper: ObjectMapper) {
 

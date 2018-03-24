@@ -10,5 +10,7 @@ import org.springframework.web.reactive.function.server.body
 @Component
 class Handlers(val service: NameService) {
     fun getFirstNames(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
-            .body(service.getFirstNames(req.queryParams()))
+            .body(req.queryParam("sortBy")
+                    .map({ sortBy -> service.getFirstNames(sortBy) })
+                    .orElse(service.getFirstNames()))
 }

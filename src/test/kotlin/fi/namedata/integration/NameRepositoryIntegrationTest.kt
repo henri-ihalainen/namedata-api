@@ -16,16 +16,9 @@ class NameRepositoryIntegrationTest {
     lateinit var repository: NameRepository
 
     @Test
-    fun `find where male all count is between 1000 and 2000`() {
-        StepVerifier.create(repository.findByMaleAllCountBetween(1000, 2000).count())
-                .expectNext(119)
-                .verifyComplete()
-    }
-
-    @Test
-    fun `find names where all count is greater than 0`() {
-        StepVerifier.create(repository.findNamesWithAllCountGreaterThanZero().count())
-                .expectNext(11847)
+    fun `test find all`() {
+        StepVerifier.create(repository.findAll().count())
+                .expectNext(3)
                 .verifyComplete()
     }
 }
