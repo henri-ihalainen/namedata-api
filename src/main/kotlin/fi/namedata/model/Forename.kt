@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
-data class FirstName(
+data class Forename(
         @Id
         var id: ObjectId? = null,
         var name: String,

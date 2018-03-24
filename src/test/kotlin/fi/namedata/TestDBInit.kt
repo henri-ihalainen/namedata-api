@@ -1,20 +1,24 @@
 package fi.namedata
 
-import fi.namedata.model.FirstName
+import fi.namedata.model.Forename
+import fi.namedata.repository.NameRepository
 import org.springframework.context.annotation.Profile
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
 @Profile("test")
 @Component
-class TestDBInit(val template: ReactiveMongoTemplate) {
+class TestDBInit(val repository: NameRepository) {
     @PostConstruct
     fun init() {
-        template.insertAll(mutableListOf(
-                FirstName(name = "Matti", maleAllCount = 100),
-                FirstName(name = "Maria", femaleAllCount = 100),
-                FirstName(name = "Anu", femaleAllCount = 90)
+        repository.saveAll(mutableListOf(
+                Forename(name = "Matti", maleAllCount = 100),
+                Forename(name = "Mirka", maleAllCount = 10, femaleAllCount = 10),
+                Forename(name = "Maria", femaleAllCount = 100),
+                Forename(name = "Anu", femaleAllCount = 90),
+                Forename(name = "Pirjo", femaleFirstCount = 90),
+                Forename(name = "John", maleFirstCount = 20),
+                Forename(name = "Foo", femaleFirstCount = 10, maleFirstCount = 20)
         )).subscribe()
     }
 }

@@ -2,7 +2,7 @@ package fi.namedata
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import fi.namedata.model.FirstName
+import fi.namedata.model.Forename
 import fi.namedata.repository.NameRepository
 import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ClassPathResource
@@ -15,7 +15,7 @@ class DBInit(val nameRepository: NameRepository, val objectMapper: ObjectMapper)
 
     @PostConstruct
     fun init() {
-        val map = HashMap<String, FirstName>()
+        val map = HashMap<String, Forename>()
 
         addResource("data/male-first.json", map) { dto, count -> dto.maleFirstCount = count }
         addResource("data/male-others.json", map) { dto, count -> dto.maleOtherCount = count }
@@ -28,22 +28,22 @@ class DBInit(val nameRepository: NameRepository, val objectMapper: ObjectMapper)
     }
 
     private fun addResource(resource: String,
-                            map: HashMap<String, FirstName>,
-                            setCount: (FirstName, Int) -> Unit) {
+                            map: HashMap<String, Forename>,
+                            setCount: (Forename, Int) -> Unit) {
         val namesResource = ClassPathResource(resource)
         val nameDtos = objectMapper.readValue<List<NameResourceDto>>(namesResource.inputStream)
         mapResources(map, nameDtos, setCount)
     }
 
-    private fun mapResources(map: MutableMap<String, FirstName>,
+    private fun mapResources(map: MutableMap<String, Forename>,
                              resourceDtos: List<NameResourceDto>,
-                             setCount: (FirstName, Int) -> Unit) {
+                             setCount: (Forename, Int) -> Unit) {
         resourceDtos.forEach({
             var dto = map[it.name]
             if (dto != null) {
                 setCount(dto, it.count)
             } else {
-                dto = FirstName(name = it.name)
+                dto = Forename(name = it.name)
                 setCount(dto, it.count)
                 map[it.name] = dto
             }
