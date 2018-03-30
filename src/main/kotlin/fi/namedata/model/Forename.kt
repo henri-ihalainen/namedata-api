@@ -7,14 +7,17 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document
 data class Forename(
         @Id
-        var id: ObjectId? = null,
-        var name: String,
-        var maleFirstCount: Int = 0,
-        var maleOtherCount: Int = 0,
-        var maleAllCount: Int = 0,
-        var femaleFirstCount: Int = 0,
-        var femaleOtherCount: Int = 0,
-        var femaleAllCount: Int = 0
+        val id: ObjectId? = null,
+        val name: String,
+        val maleFirstCount: Int = 0,
+        val maleOtherCount: Int = 0,
+        val maleAllCount: Int = 0,
+        val femaleFirstCount: Int = 0,
+        val femaleOtherCount: Int = 0,
+        val femaleAllCount: Int = 0,
+        val totalCount: NameCount = NameCount(),
+        val firstCount: NameCount = NameCount(),
+        val otherCount: NameCount = NameCount()
 ) {
     fun getTotalCount(): Int =
             maleFirstCount
@@ -25,3 +28,9 @@ data class Forename(
                     .plus(femaleAllCount)
 
 }
+
+data class NameCount(
+        val female: Int = 0,
+        val male: Int = 0,
+        val total: Int = 0
+)
