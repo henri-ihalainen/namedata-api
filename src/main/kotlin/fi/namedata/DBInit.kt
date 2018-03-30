@@ -3,15 +3,15 @@ package fi.namedata
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.namedata.model.Forename
-import fi.namedata.repository.NameRepository
 import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ClassPathResource
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
 @Profile("default")
 @Component
-class DBInit(val nameRepository: NameRepository, val objectMapper: ObjectMapper) {
+class DBInit(val mongoTemplate: MongoTemplate, val objectMapper: ObjectMapper) {
 
     @PostConstruct
     fun init() {
@@ -24,7 +24,7 @@ class DBInit(val nameRepository: NameRepository, val objectMapper: ObjectMapper)
         addResource("data/female-others.json", map) { dto, count -> dto.femaleOtherCount = count }
         addResource("data/female-all.json", map) { dto, count -> dto.femaleAllCount = count }
 
-        nameRepository.saveAll(map.values).subscribe()
+        mongoTemplate.insertAll(map.values)
     }
 
     private fun addResource(resource: String,

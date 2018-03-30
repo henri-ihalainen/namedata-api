@@ -1,5 +1,6 @@
 package fi.namedata.integration
 
+import fi.namedata.model.Forename
 import fi.namedata.service.ForenameDto
 import fi.namedata.service.NameCountDto
 import org.junit.Before
@@ -15,7 +16,7 @@ import org.springframework.test.web.reactive.server.expectBodyList
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-class ForenamesIntegrationTest {
+class ForenamesIntegrationTest: AbstractIntegrationTest() {
 
     @Autowired
     lateinit var context: ApplicationContext
@@ -29,6 +30,16 @@ class ForenamesIntegrationTest {
                 .configureClient()
                 .baseUrl("http://localhost:8080/")
                 .build()
+
+        repository.saveAll(listOf(
+                Forename(name = "Matti", maleAllCount = 100),
+                Forename(name = "Mirka", maleAllCount = 10, femaleAllCount = 10),
+                Forename(name = "Maria", femaleAllCount = 100),
+                Forename(name = "Anu", femaleAllCount = 90),
+                Forename(name = "Pirjo", femaleFirstCount = 90),
+                Forename(name = "John", maleFirstCount = 20),
+                Forename(name = "Foo", femaleFirstCount = 10, maleFirstCount = 20)
+        )).blockLast()
     }
 
     @Test

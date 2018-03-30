@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 
@@ -18,5 +19,7 @@ class NameRepository(@Autowired val template: ReactiveMongoTemplate) {
 
     fun findAll() = template.find<Forename>(Query().with(Sort.by("name")))
 
-    fun saveAll(entities: Collection<Forename>) = template.insertAll(entities)
+    fun saveAll(entities: Collection<Forename>): Flux<Forename> = template.insertAll(entities)
+
+    fun deleteAll() = template.remove<Forename>(Query())
 }
