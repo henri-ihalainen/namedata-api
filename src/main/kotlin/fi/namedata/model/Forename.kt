@@ -14,23 +14,21 @@ data class Forename(
         val maleAllCount: Int = 0,
         val femaleFirstCount: Int = 0,
         val femaleOtherCount: Int = 0,
-        val femaleAllCount: Int = 0,
-        val totalCount: NameCount = NameCount(),
-        val firstCount: NameCount = NameCount(),
-        val otherCount: NameCount = NameCount()
-) {
-    fun getTotalCount(): Int =
-            maleFirstCount
-                    .plus(maleOtherCount)
-                    .plus(maleAllCount)
-                    .plus(femaleFirstCount)
-                    .plus(femaleOtherCount)
-                    .plus(femaleAllCount)
+        val femaleAllCount: Int = 0
+)
 
-}
+@Document
+data class NewForename(
+        @Id
+        val id: ObjectId? = null,
+        val name: String,
+        val count: Int = 0,
+        val female : GenderCount = GenderCount(),
+        val male : GenderCount = GenderCount()
+)
 
-data class NameCount(
-        val female: Int = 0,
-        val male: Int = 0,
-        val total: Int = 0
+data class GenderCount(
+        val count: Int = 0,
+        val firstCount: Int = 0,
+        val otherCount: Int = 0
 )

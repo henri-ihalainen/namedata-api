@@ -12,8 +12,8 @@ class ForenameRoutes(val handlers: ForenameHandler) {
         "/forenames".nest {
             accept(MediaType.APPLICATION_JSON).nest {
                 GET("/", handlers::getForenames)
-                GET("/all", handlers::getAllNameCounts)
-                GET("/first", handlers::getFirstNameCounts)
+//                GET("/all", handlers::getAllNameCounts)
+//                GET("/first", handlers::getFirstNameCounts)
             }
         }
     }

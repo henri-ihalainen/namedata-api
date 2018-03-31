@@ -30,11 +30,12 @@ class DBInitIntegrationTest: AbstractIntegrationTest() {
 
         val maria = repository.find(Query(Criteria.where("name").`is`("Maria"))).blockLast()!!
 
-        assertEquals(41, maria.maleAllCount)
-        assertEquals(0, maria.maleFirstCount)
-        assertEquals(39, maria.maleOtherCount)
-        assertEquals(199595, maria.femaleAllCount)
-        assertEquals(20271, maria.femaleFirstCount)
-        assertEquals(179324, maria.femaleOtherCount)
+        assertEquals(41, maria.male.count)
+        assertEquals(0, maria.male.firstCount)
+        assertEquals(39, maria.male.otherCount)
+        assertEquals(199595, maria.female.count)
+        assertEquals(20271, maria.female.firstCount)
+        assertEquals(179324, maria.female.otherCount)
+        assertEquals(199636, maria.count)
     }
 }

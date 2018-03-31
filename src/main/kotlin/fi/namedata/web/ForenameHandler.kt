@@ -14,9 +14,9 @@ class ForenameHandler(val service: NameService) {
                     .map({ sortBy -> service.getForenames(sortBy) })
                     .orElse(service.getForenames()))
 
-    fun getAllNameCounts(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
-            .body(service.getAllNameCounts())
-
-    fun getFirstNameCounts(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
-            .body(service.getFirstNameCounts())
+//    fun getAllNameCounts(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
+//            .body(service.getAllNameCounts())
+//
+//    fun getFirstNameCounts(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
+//            .body(service.getFirstNameCounts())
 }
