@@ -1,78 +1,64 @@
 package fi.namedata.service
 
 import fi.namedata.model.Forename
-import fi.namedata.model.NewForename
 import fi.namedata.repository.NameRepository
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
+import java.util.*
 
 @Component
 class NameService(val repository: NameRepository) {
-    fun getForenames(sortBy: String): Flux<Forename2Dto> = repository.findAll(sortBy)
-            .map { it.toDto() }
 
-    fun getForenames(): Flux<Forename2Dto> = repository.findAll()
-            .map { it.toDto() }
+    fun getForenames(sortTerm: String?): Flux<ForenameDto> = SortInstructions.from(sortTerm)
+            .map { getForenames(it.sortBy, it.direction) }
+            .orElseGet { getForenames() }
 
-//    fun getAllNameCounts(): Flux<NameCountDto> = repository.find(Query())
-//            .map { NameCountDto(it.name, it.femaleAllCount.plus(it.maleAllCount)) }
-//            .sort({o1, o2 ->  o2.count - o1.count})
-//
-//    fun getFirstNameCounts(): Flux<NameCountDto> = repository
-//            .find(Query(Criteria().orOperator(Criteria.where("femaleFirstCount").gt(0), Criteria.where("maleFirstCount").gt(0))))
-//            .map { NameCountDto(it.name, it.femaleFirstCount.plus(it.maleFirstCount)) }
-//            .sort({o1, o2 ->  o2.count - o1.count})
+    fun getForenames(sortBy: String, direction: Sort.Direction): Flux<ForenameDto> =
+            repository.findAll(sortBy, direction).map { it.toDto() }
+
+    fun getForenames(): Flux<ForenameDto> = getForenames("total", Sort.Direction.DESC)
 }
 
-private fun toForenameDto(n: Forename): ForenameDto = ForenameDto(
-        n.name,
-        n.maleFirstCount,
-        n.maleOtherCount,
-        n.maleAllCount,
-        n.femaleFirstCount,
-        n.femaleOtherCount,
-        n.femaleAllCount
+data class SortInstructions(
+        val sortBy: String,
+        val direction: Sort.Direction
+) {
+    companion object {
+        fun from(sortTerm: String?): Optional<SortInstructions> = Optional.ofNullable(SORT_INSTRUCTIONS[sortTerm])
+
+        private val SORT_INSTRUCTIONS = mapOf(
+                Pair("name", SortInstructions("name", Sort.Direction.ASC)),
+                Pair("total", SortInstructions("total", Sort.Direction.DESC)),
+                Pair("maleTotal", SortInstructions("maleTotal", Sort.Direction.DESC)),
+                Pair("femaleFirstName", SortInstructions("femaleFirstName", Sort.Direction.DESC)),
+                Pair("femaleOtherNames", SortInstructions("femaleOtherNames", Sort.Direction.DESC)),
+                Pair("femaleTotal", SortInstructions("femaleTotal", Sort.Direction.DESC)),
+                Pair("maleFirstName", SortInstructions("maleFirstName", Sort.Direction.DESC)),
+                Pair("maleOtherNames", SortInstructions("maleOtherNames", Sort.Direction.DESC))
+        )
+    }
+
+}
+
+private fun Forename.toDto() = ForenameDto(
+        name,
+        total,
+        femaleTotal,
+        femaleFirstName,
+        femaleOtherNames,
+        maleTotal,
+        maleFirstName,
+        maleOtherNames
 )
 
 data class ForenameDto(
         val name: String,
-        val maleFirstCount: Int = 0,
-        val maleOtherCount: Int = 0,
-        val maleAllCount: Int = 0,
-        val femaleFirstCount: Int = 0,
-        val femaleOtherCount: Int = 0,
-        val femaleAllCount: Int = 0
-)
-
-
-private fun NewForename.toDto() = Forename2Dto(
-        name,
-        count,
-        GenderCountDto(
-                female.count,
-                female.firstCount,
-                female.otherCount),
-        GenderCountDto(
-                male.count,
-                male.firstCount,
-                male.otherCount)
-)
-
-data class Forename2Dto(
-        val name: String,
-        val count: Int,
-        val female: GenderCountDto,
-        val male: GenderCountDto
-)
-
-data class GenderCountDto(
-        val totalCount: Int,
-        val firstNameCount: Int,
-        val otherNamesCount: Int
-
-)
-
-data class NameCountDto(
-        val name: String,
-        val count: Int
+        val total: Int = 0,
+        val femaleTotal: Int = 0,
+        val femaleFirstName: Int = 0,
+        val femaleOtherNames: Int = 0,
+        val maleTotal: Int = 0,
+        val maleFirstName: Int = 0,
+        val maleOtherNames: Int = 0
 )

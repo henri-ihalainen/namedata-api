@@ -1,6 +1,6 @@
 package fi.namedata.repository
 
-import fi.namedata.model.NewForename
+import fi.namedata.model.Forename
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
@@ -13,12 +13,13 @@ import reactor.core.publisher.Flux
 @Repository
 class NameRepository(@Autowired val template: ReactiveMongoTemplate) {
 
-    fun find(query: Query): Flux<NewForename> = template.find(query)
+    fun find(query: Query): Flux<Forename> = template.find(query)
 
-    fun findAll(sortTerm: String, direction: Sort.Direction = Sort.Direction.ASC) =
-            template.find<NewForename>(Query().with(Sort.by(direction, sortTerm)))
+    fun findAll(sortTerm: String, direction: Sort.Direction) = template.find<Forename>(Query().with(Sort.by(direction, sortTerm)))
 
-    fun findAll() = findAll("count", Sort.Direction.DESC)
+    fun findAll() = template.find<Forename>(Query())
 
-    fun deleteAll() = template.remove<NewForename>(Query())
+    fun saveAll(entities: Collection<Forename>): Flux<Forename> = template.insertAll(entities)
+
+    fun deleteAll() = template.remove<Forename>(Query())
 }

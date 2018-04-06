@@ -10,13 +10,5 @@ import org.springframework.web.reactive.function.server.body
 @Component
 class ForenameHandler(val service: NameService) {
     fun getForenames(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
-            .body(req.queryParam("sortBy")
-                    .map({ sortBy -> service.getForenames(sortBy) })
-                    .orElse(service.getForenames()))
-
-//    fun getAllNameCounts(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
-//            .body(service.getAllNameCounts())
-//
-//    fun getFirstNameCounts(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
-//            .body(service.getFirstNameCounts())
+            .body(service.getForenames(req.queryParams()["sortBy"]?.first()))
 }
