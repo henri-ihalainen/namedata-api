@@ -6,11 +6,13 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.router
 
 @Component
-class Routes(val handlers: Handlers) {
+class ForenameRoutes(val handlers: ForenameHandler) {
     @Bean
     fun router() = router {
-        accept(MediaType.APPLICATION_JSON).nest {
-            GET("/first-names", handlers::getFirstNames)
+        "/forenames".nest {
+            accept(MediaType.APPLICATION_JSON).nest {
+                GET("/", handlers::getForenames)
+            }
         }
     }
 }

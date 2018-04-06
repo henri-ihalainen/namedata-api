@@ -2,52 +2,49 @@ package fi.namedata
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import fi.namedata.model.FirstName
-import fi.namedata.repository.NameRepository
+import fi.namedata.model.Forename
+import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ClassPathResource
+import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
+@Profile("default")
 @Component
-class DBInit(val nameRepository: NameRepository, val objectMapper: ObjectMapper) {
+class DBInit(val mongoTemplate: MongoTemplate, val objectMapper: ObjectMapper) {
 
     @PostConstruct
     fun init() {
-        val map = HashMap<String, FirstName>()
+        val forenames: Map<String, Forename> = getNameBuilders()
+                .groupingBy { it.name }
+                .fold({ key, _ -> Forename(name = key) },
+                        { _, acc, builder -> builder.append(acc) })
 
-        addResource("data/male-first.json", map) { dto, count -> dto.maleFirstCount = count }
-        addResource("data/male-others.json", map) { dto, count -> dto.maleOtherCount = count }
-        addResource("data/male-all.json", map) { dto, count -> dto.maleAllCount = count }
-        addResource("data/female-first.json", map) { dto, count -> dto.femaleFirstCount = count }
-        addResource("data/female-others.json", map) { dto, count -> dto.femaleOtherCount = count }
-        addResource("data/female-all.json", map) { dto, count -> dto.femaleAllCount = count }
-
-        nameRepository.saveAll(map.values).subscribe()
+        mongoTemplate.insertAll(forenames.values)
     }
 
-    private fun addResource(resource: String,
-                            map: HashMap<String, FirstName>,
-                            setCount: (FirstName, Int) -> Unit) {
-        val namesResource = ClassPathResource(resource)
-        val nameDtos = objectMapper.readValue<List<NameResourceDto>>(namesResource.inputStream)
-        mapResources(map, nameDtos, setCount)
+    private fun readResource(resource: String): List<NameCountDto> =
+            objectMapper.readValue(ClassPathResource(resource).inputStream)
+
+    private fun getNameBuilders() = (readResource("data/male-first.json")
+            .map { builder(it.name, { f -> f.copy(maleFirstName = it.count) }) }
+            + readResource("data/male-others.json")
+            .map { builder(it.name, { f -> f.copy(maleOtherNames = it.count) }) }
+            + readResource("data/male-all.json")
+            .map { builder(it.name, { f -> f.copy(total = f.total + it.count, maleTotal = it.count) }) }
+            + readResource("data/female-first.json")
+            .map { builder(it.name, { f -> f.copy(femaleFirstName = it.count) }) }
+            + readResource("data/female-others.json")
+            .map { builder(it.name, { f -> f.copy(femaleOtherNames = it.count) }) }
+            + readResource("data/female-all.json")
+            .map { builder(it.name, { f -> f.copy(total = f.total + it.count, femaleTotal = it.count) }) })
+
+    private fun builder(name: String, append: (Forename) -> Forename) = object {
+        val name: String = name
+        val append: (Forename) -> Forename = append
     }
 
-    private fun mapResources(map: MutableMap<String, FirstName>,
-                             resourceDtos: List<NameResourceDto>,
-                             setCount: (FirstName, Int) -> Unit) {
-        resourceDtos.forEach({
-            var dto = map[it.name]
-            if (dto != null) {
-                setCount(dto, it.count)
-            } else {
-                dto = FirstName(name = it.name)
-                setCount(dto, it.count)
-                map[it.name] = dto
-            }
-        })
-    }
+    private data class NameCountDto(val name: String, val count: Int)
 
-    private data class NameResourceDto(val name: String, val count: Int)
 }
 

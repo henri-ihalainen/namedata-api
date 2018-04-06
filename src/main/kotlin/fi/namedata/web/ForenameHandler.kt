@@ -8,10 +8,7 @@ import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.body
 
 @Component
-class Handlers(val service: NameService) {
-    fun getFirstNames(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON).body(
-            req.queryParam("sortBy")
-                    .map({sortBy -> service.getFirstNames(sortBy) })
-                    .orElse(service.getFirstNames())
-    )
+class ForenameHandler(val service: NameService) {
+    fun getForenames(req: ServerRequest) = ok().contentType(MediaType.APPLICATION_JSON)
+            .body(service.getForenames(req.queryParams()["sortBy"]?.first()))
 }
