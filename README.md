@@ -1,6 +1,7 @@
-# Rest API for VTJ open name data content
-Data is extracted from [https://www.avoindata.fi/data/fi/dataset/none](https://www.avoindata.fi/data/fi/dataset/none)
+# Rest API for VTJ name data
+Shows data about names registered in Finland
 
+Data is extracted from [https://www.avoindata.fi/data/fi/dataset/none](https://www.avoindata.fi/data/fi/dataset/none)
 
 ## API
 
