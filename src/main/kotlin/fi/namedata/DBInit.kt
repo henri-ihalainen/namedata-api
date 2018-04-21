@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
-@Profile("default")
+@Profile("production", "dev")
 @Component
 class DBInit(val mongoTemplate: MongoTemplate, val objectMapper: ObjectMapper) {
 

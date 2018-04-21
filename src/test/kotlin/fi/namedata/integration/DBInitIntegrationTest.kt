@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner
  * Test relies on VRK data updated on 3.5.2018
  */
 @RunWith(SpringRunner::class)
-@ActiveProfiles("default")
+@ActiveProfiles("dev")
 class DBInitIntegrationTest: AbstractIntegrationTest() {
     @Autowired
     lateinit var dbInit: DBInit

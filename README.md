@@ -1,6 +1,8 @@
 # Rest API for VTJ name data
 Shows data about names registered in Finland
 
+Backend for [https://github.com/henri-ihalainen/find-a-name](https://github.com/henri-ihalainen/find-a-name)
+
 Data is extracted from [https://www.avoindata.fi/data/fi/dataset/none](https://www.avoindata.fi/data/fi/dataset/none)
 
 ## API
